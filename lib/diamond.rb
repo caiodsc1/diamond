@@ -3,8 +3,8 @@ class Diamond
     raise 'Invalid letter' unless letter.is_a?(String) && ('A'..'Z').include?(letter)
 
     @letter = letter
-    @previous_letter = letter.ord.pred.chr
-    @letter_position = letter_position(letter)
+    @previous = (letter.ord - 1).chr
+    @line_size = 2 * (letter.ord - 65) + 1
 
     diamond + "\n"
   end
@@ -14,18 +14,20 @@ class Diamond
   def diamond
     return 'A' if @letter == 'A'
 
-    lines = ('A'..@previous_letter).map { |letter| diamond_line(letter) }
-    (lines + [diamond_line(@letter)] + lines.reverse).join("\n")
+    letters = ('A'..@previous).to_a
+    letters += [@letter] + letters.reverse
+
+    letters.map { |letter| diamond_line(letter) }.join("\n")
   end
 
   def diamond_line(letter)
-    return "#{'_' * @letter_position}A#{'_' * @letter_position}" if letter == 'A'
+    return ('_' * (@line_size / 2) + 'A' + '_' * (@line_size / 2)) if letter == 'A'
 
     spaces_beyond(letter) + letter + spaces_between(letter) + letter + spaces_beyond(letter)
   end
 
   def spaces_beyond(letter)
-    '_' * (@letter_position - letter_position(letter))
+    '_' * ((@line_size - spaces_between(letter).length - 2) / 2)
   end
 
   def spaces_between(letter)
